@@ -12,7 +12,8 @@ import corewar.redcode.Opcode;
 public class Memory {
 
     /** Tableau d'instructions représentant chaque cellule mémoire */
-    private Instruction[] cells;
+    private int[] cells;
+    private int size;
 
     /**
      * Constructeur : initialise la mémoire à une taille donnée.
@@ -22,17 +23,12 @@ public class Memory {
      * @param size taille de la mémoire
      */
     public Memory(int size) {
-        cells = new Instruction[size];
+        this.cells = new int[size];
+        this.size = size;
 
         // Remplissage de la mémoire avec des instructions DAT 0,0
-        for (int i = 0; i < size; i++) {
-            cells[i] = new Instruction(
-                Opcode.DAT,   // opcode DAT : instruction qui tue le processus
-                Mode.DIRECT,  // mode d’adressage A
-                0,            // opérande A
-                Mode.DIRECT,  // mode d’adressage B
-                0             // opérande B
-            );
+        for (int i = 0; i < this.size; i++) {
+            this.cells[i] = 0 ;       // On met toutes les valeurs à 0 pafin d'avoir que des instructions DAT 0, 0
         }
     }
 
@@ -42,7 +38,7 @@ public class Memory {
      * @return nombre de cellules
      */
     public int size() {
-        return cells.length;
+        return this.size;
     }
 
     /**
@@ -53,8 +49,8 @@ public class Memory {
      * @param index adresse demandée
      * @return instruction stockée à cette adresse
      */
-    public Instruction get(int index) {
-        return cells[Math.floorMod(index, cells.length)];
+    public Instruction read(int index) {
+        return cells[Math.floorMod(index, this.size)];
     }
 
     /**
@@ -65,28 +61,9 @@ public class Memory {
      * @param inst instruction à écrire
      */
     
-    public void set(int index, Instruction inst) {
-        cells[Math.floorMod(index, cells.length)] = inst;
+    public void write(int index, int value) {
+        cells[Math.floorMod(index, this.size)] = value;
     }
 
-    /**
-     * Retourne le tableau complet de la mémoire.
-     * Utile pour les tests, l'affichage ou les algorithmes évolutionnaires.
-     *
-     * @return tableau d'instructions
-     */
-    public Instruction[] getCells() {
-        return cells;
-    }
-
-    /**
-     * Remplace le tableau complet de la mémoire.
-     * Utile pour cloner une VM ou réinitialiser la mémoire.
-     *
-     * @param cells nouveau tableau d'instructions
-     */
-    public void setCells(Instruction[] cells) {
-        this.cells = cells;
-        
-    }
 }
+
