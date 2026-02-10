@@ -1,2 +1,2 @@
 # CodeWar
-Simulation de jeu CodeWar
+Simulation de jeu CoreWar
