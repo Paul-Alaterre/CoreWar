@@ -1,8 +1,8 @@
-package corewar.mars;
+package mars;
 
-import corewar.redcode.Instruction;
-import corewar.redcode.Mode;
-import corewar.redcode.Opcode;
+import redcode.Instruction;
+import redcode.Mode;
+import redcode.Opcode;
 
 /**
  * Classe représentant la mémoire de la machine virtuelle MARS.
@@ -12,7 +12,7 @@ import corewar.redcode.Opcode;
 public class Memory {
 
     /** Tableau d'instructions représentant chaque cellule mémoire */
-    private int[] cells;
+    private Instruction[] cells;
     private int size;
 
     /**
@@ -23,21 +23,21 @@ public class Memory {
      * @param size taille de la mémoire
      */
     public Memory(int size) {
-        this.cells = new int[size];
         this.size = size;
+        this.cells = new Instruction[size];
 
-        // Remplissage de la mémoire avec des instructions DAT 0,0
-        for (int i = 0; i < this.size; i++) {
-            this.cells[i] = 0 ;       // On met toutes les valeurs à 0 pafin d'avoir que des instructions DAT 0, 0
+        Instruction dat0 = new Instruction(Opcode.DAT, Mode.DIRECT, 0, Mode.DIRECT, 0);
+
+        for (int i = 0; i < size; i++) {
+            cells[i] = dat0.copy(); //Initialisation de toutes les cases avec Dat 0 0
         }
     }
-
     /**
      * Retourne la taille de la mémoire.
      *
      * @return nombre de cellules
      */
-    public int size() {
+    public int getSize() {
         return this.size;
     }
 
@@ -61,9 +61,10 @@ public class Memory {
      * @param inst instruction à écrire
      */
     
-    public void write(int index, int value) {
-        cells[Math.floorMod(index, this.size)] = value;
+    public void write(int index, Instruction instruction) {
+        cells[Math.floorMod(index, this.size)] = instruction;
     }
 
 }
+
 
