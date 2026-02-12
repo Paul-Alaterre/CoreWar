@@ -129,8 +129,8 @@ public class Mars {
             /*
             Dans le CoreWar on ne doit jamais modifier les instructions directement. Il faut 
             en créer une nouvelle et la mettre à la place de l'ancienne
-            Dans le ADD on va chercher la valeur donnée par A à ajouter et on copie l'instruction de destination pour
-            
+            Dans le ADD on va chercher la valeur donnée par A à ajouter 
+            et on copie l'instruction de destination pour la modifier et la réinjecter ensuite
             */
 
             case ADD: {
@@ -143,6 +143,11 @@ public class Mars {
                 break;
             }
 
+            /*
+            Le JMP permet d'ajouter au pointeur du processus une valeur
+            Il va cherher l'indice donné par A et place le pointeur à cette adresse.
+            B n'a aucun effet dans cette instruction
+            */
 
             case JMP: {
                 int newPc = decodeA(p, instr);
@@ -156,6 +161,7 @@ public class Mars {
     }
 
 }
+
 
 
 
