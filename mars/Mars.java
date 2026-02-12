@@ -4,46 +4,63 @@ import redcode.Instruction;
 import redcode.Mode;
 import redcode.Opcode;
 
+/**
+* C'est la classe de la machine virtuelle MARS. Elle fait le lien entre les
+* les instructions, les processus
+*/
+
 public class Mars {
 
+    /** C'est la mémoire associé à la machine virtuelle*/
     private final Memory memory;
 
+    /** Le constructeur qui prend en entrée une mémoire*/
     public Mars(Memory memory) {
         this.memory = memory;
     }
 
-    private int decodeA(Processus p, Instruction instr, Memory memory) {
-        int memorySize = memory.getSize();
+    /** 
+    * Cette méthode permet de retourner un indice dans le mémoire
+    * Cet indice est celui donné par la première valeur de l'instruction (A)
+    * après avoir été décodé. la méthode utilise le pointeur du processus, 
+    * l'instruction donnée et la taille de la mémoire. Le décodage est nécessaire
+    * en raison des différents modes d'adressages.
+    */
+    private int decodeA(Processus p, Instruction instr) {
+        int memorySize = this.memory.getSize();
         switch(instr.getModeA()) {
             case IMMEDIATE:
-                return p.getPc(); // ou exception si pas autorisé
+                return p.getPc(); // ici il faut mettre une exeption à la place car on y entre jamais
             case DIRECT:
                 return Math.floorMod(p.getPc() + instr.getA(), memorySize);
 
             case INDIRECT:
                 int addr = Math.floorMod(p.getPc() + instr.getA(), memorySize);
-                Instruction target = memory.read(addr);
+                Instruction target = this.memory.read(addr);
                 return Math.floorMod(addr + target.getB(), memorySize);
         }
         return 1;
     }
 
-    private int resolveValueA(Processus p, Instruction instr, Memory memory) {
+    /**
+    * Cette fonction renvoie la valeur donnée par A après avoir trouvé l'indice de l'instruction vidée
+    */
+    private int resolveValueA(Processus p, Instruction instr) {
         if(instr.getModeA() == Mode.IMMEDIATE)
             return instr.getA();
         else
-            return memory.read(decodeA(p, instr, memory)).getB();
+            return this.memory.read(decodeA(p, instr, this.memory)).getB();
     }
 
-    private int resolveValueB(Processus p, Instruction instr, Memory memory) {
+    private int resolveValueB(Processus p, Instruction instr) {
         if(instr.getModeB() == Mode.IMMEDIATE)
             return instr.getB();
         else
-            return memory.read(decodeB(p, instr, memory)).getB();
+            return this.memory.read(decodeB(p, instr, this.memory)).getB();
     }
 
-    private int decodeB(Processus p, Instruction instr, Memory memory) {
-        int memorySize = memory.getSize();
+    private int decodeB(Processus p, Instruction instr) {
+        int memorySize = this.memory.getSize();
         switch(instr.getModeB()) {
             case IMMEDIATE:
                 return p.getPc(); // ou exception si pas autorisé
@@ -52,7 +69,7 @@ public class Mars {
 
             case INDIRECT:
                 int addr = Math.floorMod(p.getPc() + instr.getB(), memorySize);
-                Instruction target = memory.read(addr);
+                Instruction target = this.memory.read(addr);
                 return Math.floorMod(addr + target.getB(), memorySize);
         }
 
@@ -104,4 +121,5 @@ public class Mars {
             
         }
     }
+
 }
