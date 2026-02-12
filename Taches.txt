@@ -1,0 +1,9 @@
+Création de la classe warriors
+Ajout des instructions manquantes dans Mars
+Création de l'interface graphique avec SWING
+
+
+
+
+
+NB: toujours commenter son code !
