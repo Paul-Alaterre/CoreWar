@@ -22,7 +22,7 @@ public class Mars {
     /** 
     * Cette méthode permet de retourner un indice dans le mémoire
     * Cet indice est celui donné par la première valeur de l'instruction (A)
-    * après avoir été décodé. la méthode utilise le pointeur du processus, 
+    * après avoir été décodé. La méthode utilise le pointeur du processus, 
     * l'instruction donnée et la taille de la mémoire. Le décodage est nécessaire
     * en raison des différents modes d'adressages.
     */
@@ -43,7 +43,9 @@ public class Mars {
     }
 
     /**
-    * Cette fonction renvoie la valeur donnée par A après avoir trouvé l'indice de l'instruction vidée
+    * Cette méthode renvoie la valeur donnée par l'instruction visée par A. 
+    * On récupère le B de cette instruction. Pour le mode immédiat on prend simplement
+    * la valeur de A
     */
     private int resolveValueA(Processus p, Instruction instr) {
         if(instr.getModeA() == Mode.IMMEDIATE)
@@ -51,19 +53,19 @@ public class Mars {
         else
             return this.memory.read(decodeA(p, instr, this.memory)).getB();
     }
-
-    private int resolveValueB(Processus p, Instruction instr) {
-        if(instr.getModeB() == Mode.IMMEDIATE)
-            return instr.getB();
-        else
-            return this.memory.read(decodeB(p, instr, this.memory)).getB();
-    }
-
+    
+    /** 
+    * Cette méthode permet de retourner un indice dans le mémoire
+    * Cet indice est celui donné par la deuxième valeur de l'instruction (B)
+    * après avoir été décodé. La méthode utilise le pointeur du processus, 
+    * l'instruction donnée et la taille de la mémoire. Le décodage est nécessaire
+    * en raison des différents modes d'adressages.
+    */
     private int decodeB(Processus p, Instruction instr) {
         int memorySize = this.memory.getSize();
         switch(instr.getModeB()) {
             case IMMEDIATE:
-                return p.getPc(); // ou exception si pas autorisé
+                return p.getPc(); // ici il faut mettre une exeption à la place car on y entre jamais
             case DIRECT:
                 return Math.floorMod(p.getPc() + instr.getB(), memorySize);
 
@@ -72,21 +74,45 @@ public class Mars {
                 Instruction target = this.memory.read(addr);
                 return Math.floorMod(addr + target.getB(), memorySize);
         }
-
         return 1;
     }
 
+    /**
+    * Cette méthode renvoie la valeur donnée par l'instruction visée par B. 
+    * On récupère le B de cette instruction. Pour le mode immédiat on prend simplement
+    * la valeur de B de l'instruction initiale
+    */
+
+    private int resolveValueB(Processus p, Instruction instr) {
+        if(instr.getModeB() == Mode.IMMEDIATE)
+            return instr.getB();
+        else
+            return this.memory.read(decodeB(p, instr, this.memory)).getB();
+    }
+
+    /**
+    * Cette méthode permet l'éxécution de l'instruction sur 
+    * laquelle pointe le pointeur du precessus. C'est à ce 
+    * moment que les différents types d'instructions sont différenciés
+    */
+
     public void execute(Processus p) {
-        Instruction instr = memory.read(p.getPc());
+        Instruction instr = this.memory.read(p.getPc());
 
         switch(instr.getOpcode()) {
             case DAT:
-            // Le processus meurt → on ne le remet pas dans le scheduler
+            // Le processus meurt
             break;
+
+            /*
+            Dans le MOV on copie 'instruction pointée par A dans à l'adresse donnée
+            par B. Dans le cas ou A est immédiat, on cré un DAT contenant sa valeur pour
+            remplacer l'instruction pointée par B.
+            */
 
             case MOV: {
                 int srcVal;
-                int dstAddr = decodeB(p, instr, memory);
+                int dstAddr = decodeB(p, instr, this.memory);
 
                 if (instr.getModeA() == Mode.IMMEDIATE) {
                     srcVal = instr.getA(); // valeur immédiate
@@ -96,10 +122,16 @@ public class Mars {
                     int srcAddr = decodeA(p, instr, memory);
                     memory.write(dstAddr, memory.read(srcAddr).copy());
                 }
-
                 p.advance(1, memory.getSize());
                 break;
             }
+
+            /*
+            Dans le CoreWar on ne doit jamais modifier les instructions directement. Il faut 
+            Dans le ADD on copie 'instruction pointée par A dans à l'adresse donnée
+            par B. Dans le cas ou A est immédiat, on cré un DAT contenant sa valeur pour
+            remplacer l'instruction pointée par B.
+            */
 
             case ADD: {
                 int valToAdd = resolveValueA(p, instr, memory);
@@ -118,8 +150,10 @@ public class Mars {
                 break;
             }
 
-            
+            // A compléter ...
+                
         }
     }
 
 }
+
