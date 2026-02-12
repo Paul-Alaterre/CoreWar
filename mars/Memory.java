@@ -11,7 +11,7 @@ import redcode.Opcode;
  */
 public class Memory {
 
-    /** Tableau d'instructions représentant chaque cellule mémoire */
+    /** Tableau d'instructions représentant chaque cellule mémoire ainsi que sa taille */
     private Instruction[] cells;
     private int size;
 
@@ -66,5 +66,6 @@ public class Memory {
     }
 
 }
+
 
 
