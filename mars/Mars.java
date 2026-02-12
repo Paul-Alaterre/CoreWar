@@ -119,7 +119,7 @@ public class Mars {
                     // créer une instruction DAT pour stocker la valeur
                     memory.write(dstAddr, new Instruction(Opcode.DAT, Mode.IMMEDIATE, srcVal, Mode.DIRECT, 0));
                 } else {
-                    int srcAddr = decodeA(p, instr, memory);
+                    int srcAddr = decodeA(p, instr);
                     memory.write(dstAddr, memory.read(srcAddr).copy());
                 }
                 p.advance(1, memory.getSize());
@@ -134,8 +134,8 @@ public class Mars {
             */
 
             case ADD: {
-                int valToAdd = resolveValueA(p, instr, memory);
-                int dstAddr = decodeB(p, instr, memory);
+                int valToAdd = resolveValueA(p, instr);
+                int dstAddr = decodeB(p, instr);
                 Instruction dstInstr = memory.read(dstAddr).copy();
                 dstInstr.setB(dstInstr.getB() + valToAdd);
                 memory.write(dstAddr, dstInstr);
@@ -145,7 +145,7 @@ public class Mars {
 
 
             case JMP: {
-                int newPc = decodeA(p, instr, memory);
+                int newPc = decodeA(p, instr);
                 p.setPc(newPc, memory.getSize());
                 break;
             }
@@ -156,4 +156,5 @@ public class Mars {
     }
 
 }
+
 
