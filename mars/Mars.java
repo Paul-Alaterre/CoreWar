@@ -51,7 +51,7 @@ public class Mars {
         if(instr.getModeA() == Mode.IMMEDIATE)
             return instr.getA();
         else
-            return this.memory.read(decodeA(p, instr, this.memory)).getB();
+            return this.memory.read(decodeA(p, instr)).getB();
     }
     
     /** 
@@ -87,7 +87,7 @@ public class Mars {
         if(instr.getModeB() == Mode.IMMEDIATE)
             return instr.getB();
         else
-            return this.memory.read(decodeB(p, instr, this.memory)).getB();
+            return this.memory.read(decodeB(p, instr)).getB();
     }
 
     /**
@@ -112,7 +112,7 @@ public class Mars {
 
             case MOV: {
                 int srcVal;
-                int dstAddr = decodeB(p, instr, this.memory);
+                int dstAddr = decodeB(p, instr);
 
                 if (instr.getModeA() == Mode.IMMEDIATE) {
                     srcVal = instr.getA(); // valeur immédiate
@@ -128,9 +128,9 @@ public class Mars {
 
             /*
             Dans le CoreWar on ne doit jamais modifier les instructions directement. Il faut 
-            Dans le ADD on copie 'instruction pointée par A dans à l'adresse donnée
-            par B. Dans le cas ou A est immédiat, on cré un DAT contenant sa valeur pour
-            remplacer l'instruction pointée par B.
+            en créer une nouvelle et la mettre à la place de l'ancienne
+            Dans le ADD on va chercher la valeur donnée par A à ajouter et on copie l'instruction de destination pour
+            
             */
 
             case ADD: {
@@ -156,5 +156,6 @@ public class Mars {
     }
 
 }
+
 
 
