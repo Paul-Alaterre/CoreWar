@@ -1,6 +1,6 @@
 package redcode;
 
-
+/** C'est la classe dans laquelle on stocke les différents Opcode*/
 public enum Opcode {
     MOV,  // copie une valeur / instruction
     ADD,  // addition
@@ -9,5 +9,6 @@ public enum Opcode {
     SUB
     
 }
+
 
 
