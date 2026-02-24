@@ -2,6 +2,9 @@ package mars;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import redcode.Instruction;
+import redcode.Mode;
+import redcode.Opcode;
 
 /**
  * Représente un warrior (programme) dans MARS.
