@@ -90,102 +90,63 @@ public class Mars {
             return this.memory.read(decodeB(p, instr)).getB();
     }
 
-    /**
-    * Cette méthode permet l'éxécution de l'instruction sur 
-    * laquelle pointe le pointeur du precessus. C'est à ce 
-    * moment que les différents types d'instructions sont différenciés
-    */
 
-    public void execute(Processus p) {
-        Instruction instr = this.memory.read(p.getPc());
 
-        switch(instr.getOpcode()) {
-            case DAT:
-            return False;
+                  public boolean execute(Processus p) {
+                   Instruction instr = this.memory.read(p.getPc());
 
-            /*
-            Dans le MOV on copie 'instruction pointée par A dans à l'adresse donnée
-            par B. Dans le cas ou A est immédiat, on cré un DAT contenant sa valeur pour
-            remplacer l'instruction pointée par B.
-            */
+                      switch(instr.getOpcode()) {
 
-            case MOV: {
-                int srcVal;
-                int dstAddr = decodeB(p, instr);
+                       case DAT:
+                            // Le processus meurt immédiatement
+                             return false;
 
-                if (instr.getModeA() == Mode.IMMEDIATE) {
-                    srcVal = instr.getA(); // valeur immédiate
-                    // créer une instruction DAT pour stocker la valeur
-                    memory.write(dstAddr, new Instruction(Opcode.DAT, Mode.IMMEDIATE, srcVal, Mode.DIRECT, 0));
-                } else {
-                    int srcAddr = decodeA(p, instr);
-                    memory.write(dstAddr, memory.read(srcAddr).copy());
-                }
-                p.advance(1, memory.getSize());
-                break;
-            }
+                         case MOV: {
+                             int dstAddr = decodeB(p, instr);
 
-            /*
-            Dans le CoreWar on ne doit jamais modifier les instructions directement. Il faut 
-            en créer une nouvelle et la mettre à la place de l'ancienne
-            Dans le ADD on va chercher la valeur donnée par A à ajouter 
-            et on copie l'instruction de destination pour la modifier et la réinjecter ensuite
-            */
+                              if (instr.getModeA() == Mode.IMMEDIATE) {
+                                  int srcVal = instr.getA();
+                                  memory.write(dstAddr,
+                                          new Instruction(Opcode.DAT, Mode.IMMEDIATE, srcVal, Mode.DIRECT, 0));
+                             } else {
+                                int srcAddr = decodeA(p, instr);
+                                  memory.write(dstAddr, memory.read(srcAddr).copy());
+                              }
 
-            case ADD: {
-                int valToAdd = resolveValueA(p, instr);
-                int dstAddr = decodeB(p, instr);
-                Instruction dstInstr = memory.read(dstAddr).copy();
-                dstInstr.setB(dstInstr.getB() + valToAdd);
-                memory.write(dstAddr, dstInstr);
-                p.advance(1, memory.getSize());
-                break;
-            }
+                              p.advance(1, memory.getSize());
+                              return true;
+                         }
 
-            /*
-            Le JMP permet d'ajouter au pointeur du processus une valeur
-            Il va cherher l'indice donné par A et place le pointeur à cette adresse.
-            B n'a aucun effet dans cette instruction
-            */
+                         case ADD: {
+                              int valToAdd = resolveValueA(p, instr);
+                             int dstAddr = decodeB(p, instr);
+                              Instruction dstInstr = memory.read(dstAddr).copy();
+                              dstInstr.setB(dstInstr.getB() + valToAdd);
+                             memory.write(dstAddr, dstInstr);
+                             p.advance(1, memory.getSize());
+                            return true;
+                        }
 
-            case JMP: {
-                int newPc = decodeA(p, instr);
-                p.setPc(newPc, memory.getSize());
-                break;
-            }
+                         case JMP: {
+                             int newPc = decodeA(p, instr);
+                             p.setPc(newPc, memory.getSize());
+                              return true;
+                        }
 
-            case SUB: {
-                int sourceAddr = resolveValueA(p, instr, memory);
-                int targetIndex = resolveValueB(p, instr, memory);
-                
-                Instruction source = memory.read(sourceAddr);
-                Instruction target = memory.read(targetIndex).copy();
+                          case SUB: {
+                             int valToSub = resolveValueA(p, instr);
+                            int dstAddr = decodeB(p, instr);
+                              Instruction dstInstr = memory.read(dstAddr).copy();
+                             dstInstr.setB(dstInstr.getB() - valToSub);
+                           memory.write(dstAddr, dstInstr);
+                            p.advance(1, memory.getSize());
+                          return true;
+                         }
 
-                if (instr.getModeA() == Mode.IMMEDIATE) {
-                    // On soustrait A de la source au champ B de la cible
-                    int resultB = Math.floorMod(target.getB() - source.getA(), CORE_SIZE);
-                    target.setB(resultB);
-                } 
-                else {
-                    // Soustraction A-A et B-B
-                    int resultA = Math.floorMod(target.getA() - source.getA(), CORE_SIZE);
-                    int resultB = Math.floorMod(target.getB() - source.getB(), CORE_SIZE);
-                    
-                    target.setA(resultA);
-                    target.setB(resultB);
-                }
+                         default:
+                             throw new IllegalStateException("Opcode non géré");
+                      }
+                  }
 
-                memory.write(targetIndex, target);
-                break;
-            }
-                
+
         }
-    }
-
-}
-
-
-
-
-
-
