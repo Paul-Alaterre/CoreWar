@@ -1,13 +1,18 @@
 package redcode;
 
-/** C'est la classe dans laquelle on stocke les différents Opcode*/
+/** C'est la classe dans laquelle on stocke les différents Opcode qui sent en fait des instances prédéfinies*/
 public enum Opcode {
-    MOV,  // copie une valeur / instruction
-    ADD,  // addition
-    JMP,  // saut
-    DAT,   // donnée / tue le process
-    SUB
-    
+    DAT, 
+    MOV, 
+    ADD, 
+    JMP,    
+    SUB,    
+    JMZ,
+    JMN,
+    CMP,
+    SLT,
+    DJN,
+    SPL
 }
 
 
