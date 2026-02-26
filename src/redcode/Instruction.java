@@ -49,6 +49,11 @@ public class Instruction {
         return modeB;
     }
 
+    /**Une méthode mour modifier la valeur de A*/
+    public void setA(int valueA) {
+        this.valueA = valueA;
+    }
+
     /**Une méthode mour modifier la valeur de B*/
     public void setB(int valueB) {
         this.valueB = valueB;
