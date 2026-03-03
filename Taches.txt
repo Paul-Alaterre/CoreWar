@@ -4,6 +4,9 @@ Objectif : pouvoir prendre en argument d'une game un fichier qui contient l'enti
 	- Ajout l'interface graphique - 
 Créer des boutons restart, pause et un menu déroulant pour gérer la vitesse
 
+	- Finir instructions -
+Mettre en place la dernière instruction SPL
+
 	- Tester les instructions - 
 Ca serait trop long de tester toutes les configurations d'instructions possibles car trop de variables. Du coup, on va tester les fonctions
 decodeA et decodeB d'un coté pour vérifier que tous les modes d'adressages pourront fonctionner
