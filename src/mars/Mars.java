@@ -50,18 +50,6 @@ public class Mars {
         }
         return 1;
     }
-
-    /**
-    * Cette méthode renvoie la valeur donnée par l'instruction visée par A. 
-    * On récupère le B de cette instruction. Pour le mode immédiat on prend simplement
-    * la valeur de A
-    */
-    private int resolveValueA(Processus p, Instruction instr) {
-        if(instr.getModeA() == Mode.IMMEDIATE)
-            return instr.getA();
-        else
-            return this.memory.read(decodeA(p, instr)).getB();
-    }
     
     /** 
     * Cette méthode permet de retourner un indice dans le mémoire
@@ -93,19 +81,6 @@ public class Mars {
             }
         }
         return 1;
-    }
-
-    /**
-    * Cette méthode renvoie la valeur donnée par l'instruction visée par B. 
-    * On récupère le B de cette instruction. Pour le mode immédiat on prend simplement
-    * la valeur de B de l'instruction initiale
-    */
-
-    private int resolveValueB(Processus p, Instruction instr) {
-        if(instr.getModeB() == Mode.IMMEDIATE)
-            return instr.getB();
-        else
-            return this.memory.read(decodeB(p, instr)).getB();
     }
 
     /**
@@ -145,11 +120,23 @@ public class Mars {
             */
 
             case ADD: {
-                int valToAdd = resolveValueA(p, instr);
-                int dstAddr = decodeB(p, instr);
-                Instruction dstInstr = memory.read(dstAddr).copy();
-                dstInstr.setB(Math.floorMod(dstInstr.getB() + valToAdd, memory.getSize()));
-                memory.write(dstAddr, dstInstr);
+                int targetIndex = decodeB(p, instr);
+                Instruction target = memory.read(targetIndex).copy();
+                if (instr.getModeA() == Mode.IMMEDIATE) {
+                    // On ajoute A de la source au champ B de la cible
+                    int resultB = Math.floorMod(target.getB() + instr.getA(), memory.getSize());
+                    target.setB(resultB);
+                } 
+                else{
+                    // On ajoute le a et le B de la source respectivement à A et B de la target
+                    int sourceIndex = decodeA(p, instr);
+                    Instruction source = memory.read(sourceIndex);
+                    int resultA = Math.floorMod(target.getA() + source.getA(), memory.getSize());
+                    int resultB = Math.floorMod(target.getB() + source.getB(), memory.getSize());
+                    target.setA(resultA);
+                    target.setB(resultB);
+                }
+                memory.write(targetIndex, target);
                 p.advance(1, memory.getSize());
                 break;
             }
@@ -173,8 +160,8 @@ public class Mars {
             */
 
             case SUB: {
-                int sourceAddr = resolveValueA(p, instr);
-                int targetIndex = resolveValueB(p, instr);
+                int sourceAddr = decodeA(p, instr);
+                int targetIndex = decodeB(p, instr);
                 
                 Instruction source = memory.read(sourceAddr);
                 Instruction target = memory.read(targetIndex).copy();
@@ -203,10 +190,10 @@ public class Mars {
             et avance juste de 1 sinon
             */
             case JMZ: {
-                int targetIndex = resolveValueB(p, instr);
+                int targetIndex = decodeB(p, instr);
                 Instruction target = memory.read(targetIndex);
                 if(target.getB()==0){
-                    int sourceAddr = resolveValueA(p, instr);
+                    int sourceAddr = decodeA(p, instr);
                     p.setPc(sourceAddr,memory.getSize());
                 }
                 else{
@@ -221,10 +208,10 @@ public class Mars {
             */
 
             case JMN:{
-                int targetIndex = resolveValueB(p, instr);
+                int targetIndex = decodeB(p, instr);
                 Instruction target = memory.read(targetIndex);
                 if(target.getB()!=0){
-                    int sourceAddr = resolveValueA(p, instr);
+                    int sourceAddr = decodeA(p, instr);
                     p.setPc(sourceAddr,memory.getSize());
                 }
                 else{
@@ -240,7 +227,7 @@ public class Mars {
 
             case CMP:{
                 boolean equal = false;
-                int targetIndex = resolveValueB(p, instr);
+                int targetIndex = decodeB(p, instr);
                 Instruction target = memory.read(targetIndex);
 
                 if (instr.getModeA() == Mode.IMMEDIATE) {
@@ -248,7 +235,7 @@ public class Mars {
                     equal = (instr.getA() == target.getB());
                 } 
                 else {
-                    int sourceAddr = resolveValueA(p, instr);
+                    int sourceAddr = decodeA(p, instr);
                     Instruction source = memory.read(sourceAddr);
                     
                     // Comparaison complète : Opcode + Modes + Valeurs
@@ -269,14 +256,14 @@ public class Mars {
             
             case SLT:{
                 boolean equal = false;
-                int targetIndex = resolveValueB(p, instr);
+                int targetIndex = decodeB(p, instr);
                 Instruction target = memory.read(targetIndex);
 
                 if (instr.getModeA() == Mode.IMMEDIATE) {
                     equal = (instr.getA() < target.getB());
                 }
                 else {
-                    int sourceAddr = resolveValueA(p, instr);
+                    int sourceAddr = decodeA(p, instr);
                     Instruction source = memory.read(sourceAddr);
                     equal = (source.getA() < target.getB());
                 }
@@ -290,7 +277,7 @@ public class Mars {
             }
 
             case DJN :{
-                int targetAddr = resolveValueB(p, instr);
+                int targetAddr = decodeB(p, instr);
                 Instruction target = memory.read(targetAddr);
 
                 // 1. Décrémentation du champ B de la cible
@@ -302,7 +289,7 @@ public class Mars {
                 // 2. Test du résultat (Not Zero)
                 if (target.getB() != 0) {
                     // 3. Saut vers A
-                    int jumpAddr = resolveValueA(p, instr);
+                    int jumpAddr = decodeA(p, instr);
                     p.setPc(jumpAddr, memory.getSize());
                 } 
                 else {
