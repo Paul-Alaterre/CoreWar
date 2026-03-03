@@ -1,9 +1,9 @@
-Création de la classe warriors
-Ajout des instructions manquantes dans Mars
-Création de l'interface graphique avec SWING
+Implémentation du parseur
+Ajout de boutons sur l'interface graphique -> restart, pause, menu vitesse processus
+Tester les instructions 
+Générateur aléatoire de warriors
 
 
 
 
-
-NB: toujours commenter son code !
+NB: toujours commenter son code !!
