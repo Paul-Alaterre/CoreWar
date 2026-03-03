@@ -26,7 +26,7 @@ public class Mars {
     * l'instruction donnée et la taille de la mémoire. Le décodage est nécessaire
     * en raison des différents modes d'adressages.
     */
-    private int decodeA(Processus p, Instruction instr) {
+    public int decodeA(Processus p, Instruction instr) {
         int memorySize = this.memory.getSize();
         switch(instr.getModeA()) {
             case IMMEDIATE:{
@@ -70,7 +70,7 @@ public class Mars {
     * l'instruction donnée et la taille de la mémoire. Le décodage est nécessaire
     * en raison des différents modes d'adressages.
     */
-    private int decodeB(Processus p, Instruction instr) {
+    public int decodeB(Processus p, Instruction instr) {
         int memorySize = this.memory.getSize();
         switch(instr.getModeB()) {
             case IMMEDIATE:{
