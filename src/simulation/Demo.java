@@ -1,3 +1,4 @@
+/* 
 package simulation;
 
 import mars.Mars;
@@ -19,11 +20,7 @@ public class Demo {
         Memory memory = new Memory(10);
         Mars mars = new Mars(memory);
 
-        /*
-         * =============================
-         * Chargement Warrior 1 (à 0)
-         * =============================
-         */
+        
         memory.write(0, new Instruction(
                 Opcode.ADD,
                 Mode.IMMEDIATE, 1,
@@ -34,12 +31,7 @@ public class Demo {
                 Mode.DIRECT, -1,
                 Mode.DIRECT, 0));
 
-
-        /*
-         * =============================
-         * Chargement Warrior 2 (à 10)
-         * =============================
-         */
+        //////////////////////////////////////////////////
 
         memory.write(10, new Instruction(
                 Opcode.MOV,
@@ -147,3 +139,4 @@ public class Demo {
         return count;
     }
 }
+*/
