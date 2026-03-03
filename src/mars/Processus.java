@@ -1,5 +1,4 @@
 package mars;
-import redcode.Instruction;
 
 /**
 * C'est la classe représentant un processus, c'est à dire un programme qui interagit 

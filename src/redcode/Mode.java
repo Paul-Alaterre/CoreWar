@@ -3,7 +3,8 @@ package redcode;
 public enum Mode {
     IMMEDIATE("#"),
     DIRECT(""),
-    INDIRECT("@");
+    INDIRECT("@"),
+    PREDECREMENT_INDIRECT("<");
 
     /**Variable qui est le symbole associé au mode*/
     private final String symbol;

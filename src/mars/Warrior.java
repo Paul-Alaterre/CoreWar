@@ -1,10 +1,10 @@
 package mars;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
+
 import redcode.Instruction;
-import redcode.Mode;
-import redcode.Opcode;
 
 /**
  * Représente un warrior (programme) dans MARS.
@@ -13,14 +13,27 @@ import redcode.Opcode;
 
 public class Warrior {
 
+    private List<Instruction> body;
     /** File des processus actifs du warrior */
     private final Queue<Processus> processes;
+
+    private int id;
 
     /**
      * Constructeur : initialise un warrior vide.
      */
-    public Warrior() {
+    public Warrior(List<Instruction> body, int id) {
         this.processes = new LinkedList<>();
+        this.body = body;
+        this.id = id;
+    }
+
+    public List<Instruction> getInstructions(){
+        return body;
+    }
+
+    public int getId(){
+        return id;
     }
 
     /**
@@ -38,19 +51,10 @@ public class Warrior {
      *
      * @return prochain processus
      */
-    public Processus nextProcess() {
+    public Processus getNextProcess() {
         return processes.poll();
     }
 
-    /**
-     * Replace un processus en fin de file
-     * (si toujours vivant après exécution).
-     *
-     * @param p processus à remettre dans la file
-     */
-    public void requeueProcess(Processus p) {
-        processes.add(p);
-    }
 
     /**
      * Indique si le warrior a encore des processus actifs.
@@ -66,6 +70,10 @@ public class Warrior {
      */
     public int getProcessCount() {
         return processes.size();
+    }
+
+    public Queue<Processus> getProcessQueue(){
+        return processes;
     }
 }
 
