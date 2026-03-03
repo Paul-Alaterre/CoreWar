@@ -1,8 +1,16 @@
-Implémentation du parseur
-Ajout de boutons sur l'interface graphique -> restart, pause, menu vitesse processus
-Tester les instructions 
-Générateur aléatoire de warriors
+	- Implémentation du parseur -
+Objectif : pouvoir prendre en argument d'une game un fichier qui contient l'entièreté d'un warrior
 
+	- Ajout l'interface graphique - 
+Créer des boutons restart, pause et un menu déroulant pour gérer la vitesse
+
+	- Tester les instructions - 
+Ca serait trop long de tester toutes les configurations d'instructions possibles car trop de variables. Du coup, on va tester les fonctions
+decodeA et decodeB d'un coté pour vérifier que tous les modes d'adressages pourront fonctionner
+Ensuite on teste chaque OPCODE avec une seule configuration d'adressage. Ainsi on réduit le nombre total de test à faire
+	
+	- Générateur aléatoire de warriors - 
+On va créer des gnérateurs aléatoires de warriors pour voir lesquels fonctionnent le mieux et quelle configuration se dégage
 
 
 
