@@ -74,4 +74,11 @@ public class CorewarGame {
         long aliveCount = warriors.stream().filter(Warrior::isAlive).count();
         return aliveCount > 1; // Le jeu continue s'il reste au moins 2 joueurs
     }
+    
+     public void reset() {
+    memory.clear();
+    warriors.clear();
+    // recharger les warriors initiaux si nécessaire
+}
+
 }
