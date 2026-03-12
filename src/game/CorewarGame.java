@@ -1,11 +1,11 @@
 package game;
+import java.util.ArrayList;
+import java.util.List;
 import mars.Mars;
 import mars.Memory;
+import mars.Processus;
 import mars.Warrior;
 import redcode.Instruction;
-import mars.Processus;
-import java.util.List;
-import java.util.ArrayList;
 
 
 
@@ -15,6 +15,10 @@ public class CorewarGame {
     private Mars mars; // Ton moteur d'exécution
     private int cycles;
     private int maxCycles;
+    private List<Instruction> initialCode;
+    private int initialWarriorId;
+    private int initialPosition;
+
 
     public CorewarGame(Memory memory, int maxCycles) {
         this.memory = memory;
@@ -32,27 +36,31 @@ public class CorewarGame {
         return memory;
     }
 
-    // 1. Initialisation : Charger les guerriers en mémoire
     public void loadWarrior(Warrior w, int address) {
-        // Copier les instructions du Warrior dans la mémoire à partir de 'address'
-        int i = 0;
-        for(Instruction instr : w.getInstructions()){
-            memory.write(Math.floorMod(address+i, memory.getSize()),instr.copy());
-            i++;
+
+    // Sauvegarde de l’état initial (une seule fois)
+    if (warriors.isEmpty()) {
+        initialCode = new ArrayList<>();
+        for (Instruction instr : w.getInstructions()) {
+            initialCode.add(instr.copy());
         }
-        w.addProcess(new Processus(address));
-        // Ajouter le warrior à la liste des participants
-        warriors.add(w);
+        initialWarriorId = w.getId();
+        initialPosition = address;
     }
 
-    // 2. La boucle de jeu principale
-    public void run() {
-        while (checkVictory() && cycles < maxCycles) {
-            step();
-            cycles++;
-        }
-        //fin
+    // Charger en mémoire
+    int i = 0;
+    for (Instruction instr : w.getInstructions()) {
+        memory.write(Math.floorMod(address + i, memory.getSize()), instr.copy());
+        i++;
     }
+
+    // Créer le premier processus
+    w.addProcess(new Processus(address));
+
+    warriors.add(w);
+}
+
 
     // 3. Exécution d'un tour de table (Round Robin)
     public void step() {
@@ -75,10 +83,24 @@ public class CorewarGame {
         return aliveCount > 1; // Le jeu continue s'il reste au moins 2 joueurs
     }
     
-     public void reset() {
+    public void reset() {
     memory.clear();
+    cycles = 0;
+
+    // Effacer les warriors actuels
     warriors.clear();
-    // recharger les warriors initiaux si nécessaire
+
+    // Recréer le warrior initial
+    Warrior w = new Warrior(new ArrayList<>(initialCode), initialWarriorId);
+    w.setStartAddress(initialPosition);
+
+    // Recréer le processus initial
+    w.resetProcesses();
+
+    // Ajouter le warrior à la liste
+    warriors.add(w);
+
+    // Recharger son code en mémoire
+    loadWarrior(w, initialPosition);
 }
 
-}
