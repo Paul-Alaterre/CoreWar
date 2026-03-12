@@ -50,7 +50,8 @@ public class MemoryPanel extends JPanel{
             for (Processus p : w.getProcessQueue()) {
                  visitedCells.add(p.getPc());
 
-                g.setColor(new Color(120, 200, 255)); // bleu ciel
+                 g.setColor(new Color(0, 180, 255)); // bleu néon
+                
                  for (int addr : visitedCells) {
                     int x = (addr % COLUMNS) * CELL_SIZE;
                     int y = (addr / COLUMNS) * CELL_SIZE;
