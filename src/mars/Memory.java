@@ -1,81 +1,80 @@
-package gui;
+package mars;
 
-import game.CorewarGame;
-import java.awt.*;
-import java.util.HashSet;
-import java.util.Set;
-import javax.swing.*;
-import mars.Processus;
-import mars.Warrior;
+import redcode.Instruction;
+import redcode.Mode;
+import redcode.Opcode;
 
-public class MemoryPanel extends JPanel{
-    private CorewarGame game; // Pour accéder aux processus des Warriors
-    private final int CELL_SIZE = 8; // Taille d'une case en pixels
-    private final int COLUMNS = 80;
-    private Set<Integer> visitedCells = new HashSet<>();
+/**
+ * Classe représentant la mémoire de la machine virtuelle MARS.
+ * La mémoire est un tableau d'instructions Redcode, partagé entre tous les warriors.
+ * Elle est circulaire, c’est-à-dire que les adresses dépassant la taille reviennent au début.
+ */
+public class Memory {
 
-    public MemoryPanel(CorewarGame game){
-        this.game = game;
-        int rows = game.getMemory().getSize() / COLUMNS;
-        setPreferredSize(new Dimension(COLUMNS * CELL_SIZE, rows * CELL_SIZE));
-    }
+    /** Tableau d'instructions représentant chaque cellule mémoire ainsi que sa taille */
+    private Instruction[] cells;
+    private int size;
 
-    public void clearTraces() {
-    visitedCells.clear();
-    }
+    /**
+     * Constructeur : initialise la mémoire à une taille donnée.
+     * Chaque cellule est initialisée avec l'instruction DAT 0,0 par défaut
+     * (qui correspond à une instruction “neutre” qui tue le processus si exécutée).
+     *
+     * @param size taille de la mémoire
+     */
+    public Memory(int size) {
+        this.size = size;
+        this.cells = new Instruction[size];
 
+        Instruction dat0 = new Instruction(Opcode.DAT, Mode.DIRECT, 0, Mode.DIRECT, 0);
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        for (Warrior w : game.getWarriors()) {
-        g.setColor(getWarriorColor(w.getId())); // Une couleur unique par guerrier
-        
-            for (Processus p : w.getProcessQueue()) {
-                int ip = p.getPc();
-                int x = (ip % COLUMNS) * CELL_SIZE;
-                int y = (ip / COLUMNS) * CELL_SIZE;
-
-                // Dessiner un carré plein et brillant
-                g.fillRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
-                
-                // Optionnel : un petit contour blanc pour faire "briller" le processus
-                g.setColor(Color.WHITE);
-                g.drawRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
-                g.setColor(getWarriorColor(w.getId())); // On repasse à la couleur du guerrier
-            }
-        }
-
-        for (Warrior w : game.getWarriors()) {
-            for (Processus p : w.getProcessQueue()) {
-                 visitedCells.add(p.getPc());
-                
-            g.setColor(new Color(0, 180, 255)); // bleu néon
-
-                 for (int addr : visitedCells) {
-                    int x = (addr % COLUMNS) * CELL_SIZE;
-                    int y = (addr / COLUMNS) * CELL_SIZE;
-                    g.fillRect(x, y, CELL_SIZE - 1, CELL_SIZE - 1);
-                }
- 
-            }
-}
-
-        
-    }
-
-    private Color getWarriorColor(int id) {
-        switch(id) {
-            case 0: return Color.GREEN;
-            case 1: return Color.MAGENTA;
-            case 2: return Color.CYAN;
-            default: return Color.ORANGE;
+        for (int i = 0; i < size; i++) {
+            cells[i] = dat0.copy(); //Initialisation de toutes les cases avec Dat 0 0
         }
     }
-
-    public void updateView() {
-        repaint();
+    /**
+     * Retourne la taille de la mémoire.
+     *
+     * @return nombre de cellules
+     */
+    public int getSize() {
+        return this.size;
     }
 
+    /**
+     * Accès à une cellule mémoire avec **adressage circulaire**.
+     * Corewar utilise une mémoire circulaire : après la dernière cellule,
+     * on revient au début.
+     *
+     * @param index adresse demandée
+     * @return instruction stockée à cette adresse
+     */
+    public Instruction read(int index) {
+        return cells[Math.floorMod(index, this.size)];
+    }
+
+    /**
+     * Écriture d'une instruction dans une cellule mémoire avec
+     * **adressage circulaire**.
+     *
+     * @param index adresse cible
+     * @param inst instruction à écrire
+     */
+    
+    public void write(int index, Instruction instruction) {
+        cells[Math.floorMod(index, this.size)] = instruction;
+    }
+
+    public void clear() {
+       for (int i = 0; i < cells.length; i++) {
+        cells[i] = new Instruction(
+            Opcode.DAT, Mode.DIRECT, 0,
+            Mode.DIRECT, 0
+        );
+    }
+
+    }
 }
+
+
 
