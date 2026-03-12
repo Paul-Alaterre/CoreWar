@@ -65,6 +65,10 @@ public class Memory {
         cells[Math.floorMod(index, this.size)] = instruction;
     }
 
+    public void clear() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }
 
 
