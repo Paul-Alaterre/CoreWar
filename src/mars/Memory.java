@@ -66,10 +66,17 @@ public class Memory {
     }
 
     public void clear() {
-        throw new UnsupportedOperationException("Not supported yet.");
+         for (int i = 0; i < cells.length; i++) {
+            cells[i] = new Instruction(
+            Opcode.DAT, Mode.DIRECT, 0,
+            Mode.DIRECT, 0
+        );
+        
+        }
     }
 
 }
+
 
 
 
