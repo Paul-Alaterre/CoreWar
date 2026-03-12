@@ -3,7 +3,6 @@ package mars;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-
 import redcode.Instruction;
 
 /**
@@ -75,5 +74,17 @@ public class Warrior {
     public Queue<Processus> getProcessQueue(){
         return processes;
     }
+    
+   public void resetProcesses() {
+    processes.clear();
+    processes.add(new Processus(startAddress));
+}
+    private int startAddress;
+    public void setStartAddress(int addr) {
+    this.startAddress = addr;
+}
+
+
+
 }
 
