@@ -104,3 +104,5 @@ public class CorewarGame {
     loadWarrior(w, initialPosition);
 }
 
+}
+
